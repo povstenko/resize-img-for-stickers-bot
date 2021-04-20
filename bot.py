@@ -17,21 +17,28 @@ def ask_photo(message):
 
 @bot.message_handler(content_types=['photo'])
 def photo(message):
-    fileID = message.photo[-1].file_id
-    file_info = bot.get_file(fileID)
-    downloaded_file = bot.download_file(file_info.file_path)
-
-    filename = "img/image.png"
+    bot.send_message(message.chat.id, "Send me image without compression, please.")
+    
+@bot.message_handler(content_types=['document'])
+def file(message):
+    file_name = message.document.file_name
+    file_id = message.document.file_name
+    file_id_info = bot.get_file(message.document.file_id)
+    downloaded_file = bot.download_file(file_id_info.file_path)
+    
+    filename = "img/"+ file_name
+    
     with open(filename, 'wb') as new_file:
         new_file.write(downloaded_file)
-        
+
     image = cv2.imread(filename)
     (h, w) = image.shape[:2]
     
+    # TODO
+    
     cv2.imwrite(filename, image)
     
-    
     res = open(filename, 'rb')
-    bot.send_photo(message.chat.id, res)
-
+    bot.send_document(message.chat.id, res)
+    
 bot.polling()
