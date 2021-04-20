@@ -25,16 +25,16 @@ def file(message):
     file_id = message.document.file_name
     file_id_info = bot.get_file(message.document.file_id)
     downloaded_file = bot.download_file(file_id_info.file_path)
-    
     filename = "img/"+ file_name
     
-    with open(filename, 'wb') as new_file:
-        new_file.write(downloaded_file)
-
-    image = cv2.imread(filename)
+    nparr = np.frombuffer(downloaded_file, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
+    
     (h, w) = image.shape[:2]
     
     # TODO
+    
+    img_str = cv2.imencode('.png', image)[1].tobytes()
     
     cv2.imwrite(filename, image)
     
